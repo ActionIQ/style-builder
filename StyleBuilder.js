@@ -30,6 +30,7 @@ const objectAssign = require('object-assign');
 
 const _borderStyles = ["none", "hidden", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
 const _units = ["px", "em", "pt", "%"];
+const _colorValuesThatCouldHaveSpaces = ["rgb", "rgba", "hsl", "hsla"];
 
 class StyleBuilder {
 
@@ -130,7 +131,13 @@ class StyleBuilder {
       [`border${side}Color`]: "initial",
     };
 
-    const values = value.split(" ");
+    const splitValues = value.split(" ");
+    const color = splitValues[2];
+
+    const values = color && _colorValuesThatCouldHaveSpaces.includes(color.split("(")[0])
+      ? [...splitValues.slice(0, 2), splitValues.slice(2, Infinity).join("")]
+      : splitValues
+
     if (values.length > 3) {
       console.warn(`More than 3 properties found in border: ${value}. Only using first 3`);
     }
@@ -249,4 +256,3 @@ class StyleBuilder {
 }
 
 export default new StyleBuilder();
-
