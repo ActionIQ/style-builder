@@ -33,6 +33,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42,6 +44,7 @@ var objectAssign = require('object-assign');
 
 var _borderStyles = ["none", "hidden", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
 var _units = ["px", "em", "pt", "%"];
+var _colorValuesThatCouldHaveSpaces = ["rgb", "rgba", "hsl", "hsla"];
 
 var StyleBuilder = (function () {
   function StyleBuilder() {
@@ -173,7 +176,11 @@ var StyleBuilder = (function () {
 
       var styles = (_styles = {}, _defineProperty(_styles, "border" + side + "Width", "initial"), _defineProperty(_styles, "border" + side + "Style", "initial"), _defineProperty(_styles, "border" + side + "Color", "initial"), _styles);
 
-      var values = value.split(" ");
+      var splitValues = value.split(" ");
+      var color = splitValues[2];
+
+      var values = color && _colorValuesThatCouldHaveSpaces.includes(color.split("(")[0]) ? [].concat(_toConsumableArray(splitValues.slice(0, 2)), [splitValues.slice(2, Infinity).join("")]) : splitValues;
+
       if (values.length > 3) {
         console.warn("More than 3 properties found in border: " + value + ". Only using first 3");
       }
